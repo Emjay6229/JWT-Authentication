@@ -8,13 +8,13 @@ router
   .get("/", pageController.getLandingPage)
   .get("/signup", pageController.getSignUpPage)
   .get("/login", pageController.getLoginPage)
-  .get("/signup/:id", authController.getSingleUser)
+  .get("/:id", authController.getSingleUser)
   .get("/welcome", verifyToken, pageController.getWelcomePage)
   .get("/library", verifyToken, pageController.getLibraryPage)
   .post("/signup", authController.registerNewUser)
   .post("/login", authController.loginUser)
-  .put("/signup/:id", authController.updateUser)
-  .delete("/signup/:id", authController.deleteUser)
+  .put("/:id", authController.updateUser)
+  .delete("/:id", authController.deleteUser)
   
 module.exports = router;
 
