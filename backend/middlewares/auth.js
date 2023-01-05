@@ -3,7 +3,7 @@ require("dotenv").config();
 const { SECRET } = process.env;
 
 const verifyToken = (req, res, next) => {
-  const token = req.cookies.jwt; // req.body.token || req.query.token || req.headers["x-access-token"];
+  const token = req.cookies.jwt;
 
   if (!token) {
     res.redirect("/login");
@@ -14,11 +14,11 @@ const verifyToken = (req, res, next) => {
           console.log(err.message);
           res.redirect("/login");
         }
-        console.log(decodedToken);
-        next();
+         next();
       })
     } 
   }
 
 module.exports = { verifyToken };
+        
 
