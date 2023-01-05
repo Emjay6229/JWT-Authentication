@@ -30,14 +30,14 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-// Use a mongoose pre hook 
+// Use a mongoose pre-hook to hash password before saving.
   userSchema.pre("save", async function(next) {
     const salt = bcrypt.genSaltSync(10);
     this.password = await bcrypt.hash(this.password, salt);  // the "this" keyword here references the object to be created from the userSchema
     next();
   });
 
-// Use a mongoose post hook to display created user to the console 
+// Use a mongoose post-hook to display created user to the console 
   userSchema.post("save", function(newUser, next){
     console.log("Account Created succesfully!", newUser)
     next();
