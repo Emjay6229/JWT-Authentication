@@ -96,3 +96,10 @@ exports.registerNewUser = async (req, res) => {
               console.log(err.message);
           }
         }
+  
+  
+  exports.logOut = (req, res) => {
+    res.cookie("jwt", "", { maxAge: 1 });
+    res.redirect("/");
+    console.log("You have been logged out successfully.")
+  }
