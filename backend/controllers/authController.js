@@ -98,6 +98,7 @@ exports.registerNewUser = async (req, res) => {
         }
   
   
+// LOG USER OUT
   exports.logOut = (req, res) => {
     res.cookie("jwt", "", { maxAge: 1 });
     res.redirect("/");
