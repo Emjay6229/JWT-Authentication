@@ -8,13 +8,16 @@ router
   .get("/", pageController.getLandingPage)
   .get("/signup", pageController.getSignUpPage)
   .get("/login", pageController.getLoginPage)
-  .get("/welcome/:id", authController.getSingleUser)
-  .get("/welcome", verifyToken, pageController.getWelcomePage)
-  .get("/library", verifyToken, pageController.getLibraryPage)
   .post("/signup", authController.registerNewUser)
   .post("/login", authController.loginUser)
-  .put("/welcome/:id", verifyToken, authController.updateUser)
-  .delete("/welcome/:id", verifyToken, authController.deleteUser)
+  .get("/welcome", verifyToken, pageController.getWelcomePage)
+  .get("/welcome/logout", verifyToken, authController.logOut)
+  .get("/welcome/library", verifyToken, pageController.getLibraryPage)
+  .get("/welcome/:_id", authController.getSingleUser)
+  .put("/welcome/:_id", verifyToken, authController.updateUser)
+  .delete("/welcome/:_id", verifyToken, authController.deleteUser)
   
 module.exports = router;
+  
+
 
