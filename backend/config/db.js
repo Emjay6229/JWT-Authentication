@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 require("dotenv").config();
-const { MONGO_DB_LOCAL } = process.env;
 
-async function connectDB(uri=MONGO_DB_LOCAL) {
+async function connectDB(uri) {
   try {
     mongoose.connect(uri);
     mongoose.set('strictQuery', true);

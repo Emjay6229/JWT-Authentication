@@ -1,22 +1,14 @@
 const router = require("express").Router();
-const { verifyToken } = require("../middlewares/auth.js");
-const authController = require("../controllers/authController.js");
-const pageController = require("../controllers/pageController.js");
-const uploadController = require("../controllers/uploadController")
-// const chunkController = require("../controllers/chunkController.js");
+const {
+  registerNewUser,
+  loginUser,
+  logOut
+} = require("../controllers/authController.js");
 
-//Set up routes for registration and Login 
+//Set up routes for registration, Login, Log out
 router
-  .get("/", pageController.getLandingPage)
-  .get("/signup", pageController.getSignUpPage)
-  .get("/login", pageController.getLoginPage)
-  .get("/signup/:id", authController.getSingleUser)
-  .get("/welcome", verifyToken, pageController.getWelcomePage)
-  .get("/library", verifyToken, pageController.getLibraryPage)
-  .post("/signup", authController.registerNewUser)
-  .post("/login", authController.loginUser)
-  .put("/signup/:id", authController.updateUser)
-  .delete("/signup/:id", authController.deleteUser)
-  // .post('/uploads', upload.single('file'), uploadController.uploadFile)
-    
+  .post("/signup", registerNewUser)
+  .post("/signin", loginUser)
+  .post("/signout", logOut)
+  
 module.exports = router;

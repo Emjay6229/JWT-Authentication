@@ -1,49 +1,30 @@
-const jwt = require("jsonwebtoken");
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
+
 const { SECRET } = process.env;
 
+// Check for presence of authentication token
 const verifyToken = (req, res, next) => {
-  const token = req.cookies.jwt; // req.body.token || req.query.token || req.headers["x-access-token"];
 
+  // extract token from cookie
+  const token = req.cookies.jwt;
+  // check if token exists.
   if (!token) {
-    res.redirect("/login");
-  } 
-  else {
-      jwt.verify(token, SECRET , (err, decodedToken) => {
+     // return error if token does not exist 
+      res.status(401).json({
+          msg: "No token found"
+        });
+      console.log("No token found")
+  } else {
+    // else verify token. If no error, call next() function
+      jwt.verify(token, SECRET , (err, decoded) => {
         if (err) {
           console.log(err.message);
-          res.redirect("/login");
         }
-        console.log(decodedToken);
+        console.log(decoded);
         next();
       })
     } 
   }
 
 module.exports = { verifyToken };
-
-// exports.authenticateUser = (req, res, next) => {
-//   // check if there is an authorization token
-//   if (!req.headers.authorization) {
-//     return res.status(401).json({
-//       message: "Authentication is required",
-//     });
-//   }
-//   let headerSplit = req.headers.authorization;
-
-//   if(headerSplit[0] !== "Bearer") {
-//     return res.status(401).json({
-//         message: "authorization format is Bearer <token>"
-//     })
-//   }
-//   let token = headerSplit[1];
-// //   check validity
-//   jwt.verify(token, SECRET, (err, decodedToken) => {
-//     if (err) return res.status(500).json({ err })
-//     if (!decodedToken) {
-//         return res.status(401).json({message: "invalid authorization token, login to continue"})
-//     }
-//     // allow user to continue
-//     next()
-//   })
-// };

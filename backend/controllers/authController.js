@@ -1,14 +1,14 @@
 // IMPORT MODULES
+require("dotenv").config();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
 const { SECRET } = process.env;
 const expiryTime = 1800;
 const errors = require("./errorController");
-const { verifyToken } = require("../middlewares/auth.js");
 
 // jwt creation function
 const createToken = (id, email) => {
+  // Payload contains information to be sent in the token
   let payload = {id, email};
   return jwt.sign(payload, SECRET, { expiresIn: expiryTime });
 }
@@ -16,34 +16,56 @@ const createToken = (id, email) => {
 // REGISTRATION AUTHENTICATION
 exports.registerNewUser = async (req, res) => {
   try {  
-          const { name, email, password } =  req.body; // Get user details from request body
-          // mongoose pre-save hook executes here, hashes password.
-          const newUser = await User.create({ name, email, password }); // create new user
-          const token = createToken(newUser._id, newUser.email);  // create token
-          res.cookie("jwt", token, { httpOnly: true, maxAge: expiryTime * 1000 }); // stores token in cookie
-          console.log("Your Registration was successful!" , {newUser: newUser._id});
+          // Get user's name, email and password details from request body
+          const { name, email, password } =  req.body;
 
-          // render welcome page
-          verifyToken; 
-          res.redirect("/welcome");
+          // mongoose pre-save hook executes here, hashes user password.
+
+          const newUser = await User.create({ name, email, password }); 
+          // creates a new user in the database
+
+          const token = createToken(newUser._id, newUser.email);  
+          // creates a verification token from user email and id.
+
+          res.cookie("jwt", token, { httpOnly: true, maxAge: expiryTime * 1000 }); 
+          // stores token in cookie
+
+          console.log("Your Registration was successful!");
+
+          res.status(200).json({ 
+            id: newUser._id, 
+            name: newUser.name, 
+            email: newUser.email
+          });
 
           } catch (err) {
                 const error = errors.errorHandler(err);
-                res.status(400).json({ error});
+                res.status(400).json({error});
             }
           }
 
 // LOGIN AUTHENTICATION 
   exports.loginUser = async (req, res) => {
       try {
-              const { email, password } =  req.body; // Get user input from request body
-              const user = await User.login(email, password); // login user using mongoose statics
-              const token = createToken(user._id, user.email);  // create token
-              res.cookie("jwt", token, { httpOnly: true, maxAge: expiryTime * 1000 }); // stores token in cookie
-              console.log("login successful!" , {user });
+              const { email, password } =  req.body; 
+              // Get user input from request body to execute logic on body data.
 
-              verifyToken;
-              res.redirect("/welcome");
+              const user = await User.login(email, password); 
+              // model.login() returns matching user based on email parameter from database
+
+              const token = createToken(user._id, user.email);  
+              // create token to be attached to response
+
+              res.cookie("jwt", token, { httpOnly: true, maxAge: expiryTime * 1000 }); 
+              // stores authentication token in cookie which is sent to the client in the browser.
+              
+              console.log("login successful!");
+
+              res.status(200).json({
+                id: user._id, 
+                name: user.name, 
+                email: user.email 
+              });
 
         } catch (err) {
               const error = errors.errorHandler(err);
@@ -51,48 +73,13 @@ exports.registerNewUser = async (req, res) => {
           }
         }
 
-    
-// GET A SINGLE USER
-  exports.getSingleUser = async (req, res) => {
-      try {
-              const id = {_id: req.params.id };
+// LOG USER OUT
+exports.logOut = async (req, res) => {
+  try {
+         res.cookie("jwt", "", { httpOnly: true, maxAge: 1 })
 
-              const singleUser = await User.findOne(id);
-
-              res.status(200).json(singleUser);
-       } catch (err) {
-            console.log(err.message);
-       }
-    } 
-
-
-// UPDATE USER DETAILS
-  exports.updateUser = async (req, res) => {
-      try {
-              const id = { _id: req.params.id };
-
-              const updatedUser = req.body;
-              
-              await User.findOneAndUpdate(id, updatedUser, { new: true });
-
-              res.status(200).send("User updated");
-              console.log(updatedUser);
-
-      } catch (err) {
-              console.log(err.message);
-          }
-        }
-
-
-// DELETE USER
-  exports.deleteUser = async (req, res) => {
-      try {
-              const id = { _id: req.params.id };
-              
-              await User.findOneAndDelete(id);
-
-              res.status(200).send("User deleted");
-        } catch(err) {
-              console.log(err.message);
-          }
-        }
+         res.status(200).json ({ Success: "You have been succesfully Logged out" })
+    } catch(err) {
+          console.log(err.message);
+      }
+    }

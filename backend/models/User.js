@@ -30,28 +30,34 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
-// Use a mongoose pre hook 
-  userSchema.pre("save", async function(next) {
+// Use a mongoose pre-hook to hash user password before saving
+  userSchema.pre("save", async function( next ) {
     const salt = bcrypt.genSaltSync(10);
-    this.password = await bcrypt.hash(this.password, salt);  // the "this" keyword here references the object to be created from the userSchema
+    this.password = await bcrypt.hash(this.password, salt);  
+    // the "this" keyword here references the user object to be created from the userSchema
     next();
   });
 
-// Use a mongoose post hook to display created user to the console 
-  userSchema.post("save", function(newUser, next){
-    console.log("Account Created succesfully!", newUser)
+// Use a mongoose post-hook to display created user to the console 
+  userSchema.post("save", function( newUser, next ){
+    console.log("Account Created successfully!")
     next();
   });
 
-// create static login method
-  userSchema.statics.login = async function(email, password) {
+// create statics login method
+  userSchema.statics.login = async function( email, password ) {
     const user = await this.findOne({ email });
+    // finds and returns the "user object" from the database if it exists
 
       if (!user) {
         throw Error("Incorrect email");
       } 
     
-    const verifyPassword = await bcrypt.compare(password, user.password);
+    const verifyPassword = await bcrypt.compare( password, user.password );
+    /* bcrypt.compare() takes two arguments: 
+        a.) user's submitted login password 
+        b.) user's hashed password as stored in the database 
+    */
     if (!verifyPassword) {
             throw Error("Incorrect password");
           }
